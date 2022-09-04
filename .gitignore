@@ -133,3 +133,6 @@ dmypy.json
 
 # ignore data folder
 /data
+
+# ignore catboost_info
+/experiment/catboost_info
