@@ -2,6 +2,7 @@
 import streamlit as st
 import pandas as pd
 
+
 @st.cache
 def download_data(url_data, features)->pd.DataFrame:
     """download latest covid data from https://ourworldindata.org and return . Provide the url and the features you want."""
@@ -74,8 +75,20 @@ def add_case_fatality_rate(df_country:pd.DataFrame)->pd.DataFrame:
     df.dropna(axis=0, inplace=True)
     return df
 
+def filter_date(dataframe:pd.DataFrame, start_date:str, end_date:str)->pd.DataFrame:
+    """Filter dataframe by date range including start_date and end_date. """
+    return dataframe.loc[(dataframe.index >= start_date) & (dataframe.index <= end_date)]
+
 def get_start_end_date(df_country:pd.DataFrame)->str:
     """Get start and end dates in dataframe of single country """
     start_date = str(df_country.index[0])[:-9]
     end_date = str(df_country.index[-1])[:-9]
     return start_date, end_date
+
+def train_test_split(df_country:pd.DataFrame, split_date:str)->pd.DataFrame:
+    """Split into train and test given a split date"""
+    start_date, end_date = get_start_end_date(df_country)
+    day_after_split_date = str(pd.to_datetime(split_date) + pd.DateOffset(days=1))[:-9]
+    df_train = filter_date(df_country, start_date=start_date, end_date=split_date)
+    df_test = filter_date(df_country, start_date=day_after_split_date, end_date=end_date) 
+    return df_train, df_test

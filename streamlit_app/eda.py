@@ -1,9 +1,15 @@
 import streamlit as st
+import os
+from pathlib import Path
 from datetime import datetime
 import pandas as pd
 import plotly.express as px
 from utility import download_data, drop_countries, filter_country, ts_filling, add_new_deaths_pct_change, add_case_fatality_rate, get_start_end_date
 
+# set directories
+rootdir = os.getcwd()
+DATAPATH = Path(rootdir) / 'data'
+Path(DATAPATH).mkdir(parents=True, exist_ok=True)
 
 # download url of the data
 url_data = (r'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv')
@@ -32,7 +38,6 @@ def run_eda_app():
     st.write( pd.DataFrame(df.isna().sum(), columns=['Missing Rows']))    
 
 
-
     st.header('Set Missing Rows Percentage-Threshold!')
     max_pct_missing = st.slider('Set Max Percent Missing Data Rows: ', 1, 20, 5)
     df_reduced = drop_countries(df, max_missing_pct=max_pct_missing/100)
@@ -59,10 +64,12 @@ def run_eda_app():
     df_country = add_case_fatality_rate(df_country)
     st.write( pd.DataFrame(df_country.isna().sum(), columns=['Missing Rows']))
     st.write(df_country)
+    # save dataset to local folder
+    df_country.to_csv(DATAPATH / 'df_country.csv')
+    
 
     # visualize
     st.header('Visualize {}´s Data!'.format(country_selected))
-    split_date = '2021-03-10'
     start_date, end_date = get_start_end_date(df_country)
     split_date = st.slider("Select Training Period", 
                            datetime(pd.to_datetime(start_date).year, pd.to_datetime(start_date).month, pd.to_datetime(start_date).day),

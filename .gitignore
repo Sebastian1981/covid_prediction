@@ -133,6 +133,8 @@ dmypy.json
 
 # ignore data folder
 /data
+/streamlit_app/data
+/streamlit_app/models/
 
 # ignore catboost_info
 /experiment/catboost_info
