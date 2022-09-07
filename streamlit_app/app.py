@@ -6,7 +6,7 @@ from eda import run_eda_app
 
 
 def main():
-    st.title('Let´s Predict the Number of COVID-19 Patients in Intensive Care per Million People')
+    st.title('Let´s Predict the Number of COVID-19 Patients in Intensive Care Units (ICU) per Million People')
     menu = ["About this Project", "Exploratory Data Analysis", "Modeling"]
     choice = st.sidebar.selectbox("Menu", menu)
 

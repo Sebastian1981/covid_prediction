@@ -47,3 +47,35 @@ def drop_countries(df:pd.DataFrame, max_missing_pct=0.1)->pd.DataFrame:
             country_list.append(country)
     # keep only countries in the list i.e. drop the remaining ones
     return df[df['location'].isin(country_list)]
+
+
+def add_new_deaths_pct_change(df_country:pd.DataFrame)->pd.DataFrame:
+    """calculate percent change between the median number of deaths 14 days earlier and the median number of deaths today"""
+    df = df_country.copy()
+    df['new_deaths_per_million_pct_change'] = df['new_deaths_per_million'].pct_change(periods=14, fill_method='pad', freq='D')
+    df['new_deaths_per_million_pct_change'].fillna(value=None, method='bfill', axis=0, inplace=True, limit=30, downcast=None)
+    df.dropna(axis=0, inplace=True)
+    return df
+
+def add_case_fatality_rate(df_country:pd.DataFrame)->pd.DataFrame:
+    """calculate case fatality rate CFR for single country df; CFR is the ratio between the 14-day median number of deaths and the 14-day median number of cases 14 days earlier """
+    df = df_country.copy()
+    df['case_fatality_rate'] = df['new_deaths_per_million'] / df['new_cases_per_million'].shift(14)
+    # set inf values to zero i.e. the assumption is when there are no cases then there are no deaths
+    df['case_fatality_rate'][df['new_cases_per_million']==0] = 0
+    # set na values to zero i.e. the assumption is when there are no deaths and at the same time zero cases, then CFR is still zero
+    df['case_fatality_rate'][df['new_deaths_per_million']==0] = 0
+    # cfr above 100% makes no sense
+    df['case_fatality_rate'][df['case_fatality_rate']>1] = 1
+    # do a little smoothing i.e. average over 7 days
+    df['case_fatality_rate'] = df['case_fatality_rate'].rolling(7).median()
+    # fill in new nas
+    df['case_fatality_rate'].fillna(value=None, method='bfill', axis=0, inplace=True, limit=30, downcast=None)
+    df.dropna(axis=0, inplace=True)
+    return df
+
+def get_start_end_date(df_country:pd.DataFrame)->str:
+    """Get start and end dates in dataframe of single country """
+    start_date = str(df_country.index[0])[:-9]
+    end_date = str(df_country.index[-1])[:-9]
+    return start_date, end_date
