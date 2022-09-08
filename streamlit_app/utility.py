@@ -2,8 +2,6 @@
 import streamlit as st
 import pandas as pd
 
-
-@st.cache
 def download_data(url_data, features)->pd.DataFrame:
     """download latest covid data from https://ourworldindata.org and return . Provide the url and the features you want."""
     df = pd.read_csv(url_data, usecols = features)

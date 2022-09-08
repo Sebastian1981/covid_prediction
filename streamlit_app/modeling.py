@@ -1,12 +1,13 @@
+import os
+from pathlib import Path
+import joblib
+from datetime import datetime
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from datetime import datetime
-from utility import get_start_end_date, train_test_split
-import os
-from pathlib import Path
 from pycaret.regression import *
-import joblib
+from utility import get_start_end_date, train_test_split
+
 
 # set directories
 rootdir = os.getcwd()
@@ -16,24 +17,28 @@ Path(MODELPATH).mkdir(parents=True, exist_ok=True)
 
 
 def run_model_app():
-
-    st.subheader('Define Forecast Horizont')
-    forecast_horizont = st.slider("Select Forecasting Horizont", 1, 28, 7)
-    target_name = 'icu_patients_per_million' + '_' + str(forecast_horizont) + 'days_ahead'
+    
+    ########################################
+    # import country data
+    ########################################
     df_country = pd.read_csv(DATAPATH / 'df_country.csv', index_col='date')
     df_country.index = pd.to_datetime(df_country.index)
     country_selected = df_country['location'][0]
+    st.header('Forecast ICU Patients for {}!'.format(country_selected))
+
+    ########################################
+    # Define Forecast Horizont
+    ########################################
+    st.subheader('Define Forecast Horizont')
+    forecast_horizont = st.slider("Select Forecasting Horizont", 1, 28, 7)
+    target_name = 'icu_patients_per_million' + '_' + str(forecast_horizont) + 'days_ahead'
     df_country[target_name] = df_country['icu_patients_per_million'].shift(-forecast_horizont)
     df_country.dropna(axis=0, inplace=True)
-
-
-    st.subheader('Inspect Data')    
-    st.write('{} contains {} rows and {} columns'.format(country_selected, df_country.shape[0], df_country.shape[1]))
-    st.write( pd.DataFrame(df_country.isna().sum(), columns=['Missing Rows']))
-    st.write(df_country)
     
-
-    st.header('Seperate Data into Training and Testing Periods!')
+    ########################################
+    # Train & Test Split
+    ########################################
+    st.subheader('Seperate Data into Training and Testing Periods!')
     start_date, end_date = get_start_end_date(df_country)
     split_date = st.slider("Select Training Period", 
                            datetime(pd.to_datetime(start_date).year, pd.to_datetime(start_date).month, pd.to_datetime(start_date).day),
@@ -41,10 +46,12 @@ def run_model_app():
                            datetime(pd.to_datetime(start_date).year, pd.to_datetime(start_date).month+6, pd.to_datetime(start_date).day), 
                            format="YY/MM/DD")
     split_date = str(split_date)[:-9]
+    df_train, df_test = train_test_split(df_country, split_date = split_date)
     
+    # visualize 
     fig = px.line(df_country, 
                     x=df_country.index, 
-                    y=['icu_patients_per_million'], 
+                    y=['icu_patients_per_million', target_name], 
                     title = '{}: COVID-19 Patients in ICU per Million'.format(country_selected), 
                     width=1200,
                     height=600,
@@ -58,17 +65,17 @@ def run_model_app():
                 fillcolor="red", opacity=0.15, line_width=0)
     st.write(fig)
 
-    # train test split
-    df_train, df_test = train_test_split(df_country, split_date = split_date)
-    st.write('Training Data:', df_train)
-    st.write('Testing Data:', df_test)
 
-    st.header('Let´s Train the Model!')
-    if st.button('Train -> Tune -> Save Model'):
+    ########################################
+    # Model Training
+    ########################################    
+    st.subheader('Train Machine Learning Models!')
+    if st.button('Train Models'):
+        train_state = st.text('Training, Comparing & Tuning ML-Models...')
         s = setup(df_train, 
             target = target_name,
-            ignore_features = ['location', 'new_cases_per_million', 'new_deaths_per_million_pct_change'],
-            #ignore_features = ['location'],
+            #ignore_features = ['location', 'new_cases_per_million', 'new_deaths_per_million_pct_change'],
+            ignore_features = ['location'],
             train_size = .99,
             data_split_shuffle = False, 
             fold_strategy = 'timeseries', fold=10,
@@ -103,11 +110,13 @@ def run_model_app():
         best_model = finalize_model(best_model)
         # save model
         joblib.dump(best_model, MODELPATH / 'best_model.pkl')
-
+        train_state = st.text('Training, Comparing & Tuning ML-Models...Done!')
     
-    # evaluate model performance
-    st.header('Evaluate Model Performance!')
-    if st.button('Evaluate Model'):
+    ########################################
+    # Plot Forecast
+    ########################################
+    st.subheader('Visualize the Forecast!')
+    if st.button('Plot Forecast'):
         best_model = joblib.load(MODELPATH / 'best_model.pkl')
         # predict on training 
         forecast_name = str(forecast_horizont) + 'days_ahead_forecast'
@@ -138,12 +147,25 @@ def run_model_app():
         st.write(fig)
 
         
-        
-    
-    ## evaluate model performance
-    #plot_model(best_model, 'error', display_format='streamlit')
-    #plot_model(best_model, 'residuals', display_format='streamlit')
-    #plot_model(best_model, 'feature', display_format='streamlit')
+    st.subheader('Analyze Feature Importance!')
+    if st.button('Show Feature Importance'): 
+        best_model = joblib.load(MODELPATH / 'best_model.pkl')   
+        plot_model(best_model, 'feature', display_format='streamlit')
+
+
+    ########################################
+    # Clear Memory After Experiment
+    ########################################
+    st.subheader('Clear Memory after Experiment!')
+    if st.button('Clear Memory'):
+        # clear files in data folder
+        filelist = [f for f in os.listdir(DATAPATH) ]
+        for f in filelist:
+            os.remove(os.path.join(DATAPATH, f))
+        # clear files in model folder
+        filelist = [f for f in os.listdir(MODELPATH) ]
+        for f in filelist:
+            os.remove(os.path.join(MODELPATH, f))
     
         
     
