@@ -78,18 +78,18 @@ def run_model_app():
             ignore_features = ['location'],
             train_size = .99,
             data_split_shuffle = False, 
-            fold_strategy = 'timeseries', fold=10,
+            fold_strategy = 'timeseries', fold=2,
             imputation_type = 'simple',
             numeric_imputation = 'median',
             remove_multicollinearity = True,
-            multicollinearity_threshold = 0.4,
-            feature_interaction=True,
+            multicollinearity_threshold = 0.3,
+            feature_interaction=False,
             polynomial_features=False,
             remove_outliers = False,
             transform_target=False,
             transformation = False,
             normalize = False,
-            feature_selection = True,
+            feature_selection = False,
             feature_selection_method='boruta',
             feature_selection_threshold = 0.3,
             silent = True, 
@@ -97,13 +97,17 @@ def run_model_app():
             session_id = 123)
 
         # compare models
-        best_model = compare_models(#include=['xgboost', 'dummy', 'lr', 'lightgbm'],
-                                    include=['lightgbm','dt','gbr'],
-                                    #include=['xgboost', 'lightgbm','lr'],
-                                    #include=['lr','dummy'],
-                                    sort='R2', 
-                                    verbose=True,
-                                    n_select = 1)
+        #best_model = compare_models(#include=['xgboost', 'dummy', 'lr', 'lightgbm'],
+        #                            include=['lightgbm','dt','gbr'],
+        #                            #include=['xgboost', 'lightgbm','lr'],
+        #                            #include=['lr','dummy'],
+        #                            sort='R2', 
+        #                            verbose=True,
+        #                            n_select = 1)
+
+
+        # train light gradient boosting machine
+        best_model = create_model('lightgbm') 
         # tune best model
         best_model = tune_model(best_model)
         # finalize model on all training data
