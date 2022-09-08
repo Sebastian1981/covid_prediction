@@ -98,7 +98,7 @@ def run_model_app():
 
         # compare models
         best_model = compare_models(#include=['xgboost', 'dummy', 'lr', 'lightgbm'],
-                                    include=['xgboost', 'lightgbm','dt','gbr'],
+                                    include=['lightgbm','dt','gbr'],
                                     #include=['xgboost', 'lightgbm','lr'],
                                     #include=['lr','dummy'],
                                     sort='R2', 
