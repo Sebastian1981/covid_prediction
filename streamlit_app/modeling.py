@@ -69,9 +69,9 @@ def run_model_app():
     ########################################
     # Model Training
     ########################################    
-    st.subheader('Train Machine Learning Models!')
-    if st.button('Train Models'):
-        train_state = st.text('Training, Comparing & Tuning ML-Models...')
+    st.subheader('Train Machine Learning Model!')
+    if st.button('Train Model'):
+        train_state = st.text('Training Model...(30s-3min!)')
         s = setup(df_train, 
             target = target_name,
             #ignore_features = ['location', 'new_cases_per_million', 'new_deaths_per_million_pct_change'],
@@ -114,62 +114,50 @@ def run_model_app():
         best_model = finalize_model(best_model)
         # save model
         joblib.dump(best_model, MODELPATH / 'best_model.pkl')
-        train_state = st.text('Training, Comparing & Tuning ML-Models...Done!')
+        train_state = st.text('Training...Done!')
     
     ########################################
     # Plot Forecast
     ########################################
     st.subheader('Visualize the Forecast!')
-    if st.button('Plot Forecast'):
-        best_model = joblib.load(MODELPATH / 'best_model.pkl')
-        # predict on training 
-        forecast_name = str(forecast_horizont) + 'days_ahead_forecast'
-        df_train = predict_model(best_model, data=df_train, round=1, verbose=False)
-        df_train.rename(columns={'Label': forecast_name}, inplace=True) # rename prediction column
-        # predict on testing set
-        df_test = predict_model(best_model, data=df_test, round=1, verbose=False)
-        df_test.rename(columns={'Label': forecast_name}, inplace=True) # rename prediction column
-        # predict on whole dataset
-        df_country = predict_model(best_model, data=df_country, round=1, verbose=False)
-        df_country.rename(columns={'Label': forecast_name}, inplace=True) # rename prediction column
+    best_model = joblib.load(MODELPATH / 'best_model.pkl')
+    # predict on training 
+    forecast_name = str(forecast_horizont) + 'days_ahead_forecast'
+    df_train = predict_model(best_model, data=df_train, round=1, verbose=False)
+    df_train.rename(columns={'Label': forecast_name}, inplace=True) # rename prediction column
+    # predict on testing set
+    df_test = predict_model(best_model, data=df_test, round=1, verbose=False)
+    df_test.rename(columns={'Label': forecast_name}, inplace=True) # rename prediction column
+    # predict on whole dataset
+    df_country = predict_model(best_model, data=df_country, round=1, verbose=False)
+    df_country.rename(columns={'Label': forecast_name}, inplace=True) # rename prediction column
+    # smooth forecast
+    smooth_ndays = st.slider("Smooth forecast: select number of days to average", 1, 14, 5)
+    df_country[forecast_name] = df_country[forecast_name].rolling(smooth_ndays).median()
 
         
-        fig = px.line(df_country, 
-                        x=df_country.index, 
-                        y=['icu_patients_per_million', forecast_name], 
-                        title = '{}: COVID-19 Patients in ICU per Million'.format(country_selected), 
-                        width=1200,
-                        height=600,
-                        template = 'plotly_dark')
-        fig.add_vline(x=split_date, line_width=3, line_dash="dash", line_color="red")
-        fig.add_vrect(x0=start_date, x1=split_date, row="all", col=1,
-                    annotation_text="training period", annotation_position="top left",
-                    fillcolor="green", opacity=0.15, line_width=0)
-        fig.add_vrect(x0=split_date, x1=end_date, row="all", col=1,
-                    annotation_text="testing period", annotation_position="top left",
-                    fillcolor="red", opacity=0.15, line_width=0)
-        st.write(fig)
+    fig = px.line(df_country, 
+                    x=df_country.index, 
+                    y=['icu_patients_per_million', forecast_name], 
+                    title = '{}: COVID-19 Patients in ICU per Million'.format(country_selected), 
+                    width=1200,
+                    height=600,
+                    template = 'plotly_dark')
+    fig.add_vline(x=split_date, line_width=3, line_dash="dash", line_color="red")
+    fig.add_vrect(x0=start_date, x1=split_date, row="all", col=1,
+                annotation_text="training period", annotation_position="top left",
+                fillcolor="green", opacity=0.15, line_width=0)
+    fig.add_vrect(x0=split_date, x1=end_date, row="all", col=1,
+                annotation_text="testing period", annotation_position="top left",
+                fillcolor="red", opacity=0.15, line_width=0)
+    st.write(fig)
 
-        
+    ########################################
+    # Plot Feature Importance
+    ########################################        
     st.subheader('Analyze Feature Importance!')
     if st.button('Show Feature Importance'): 
         best_model = joblib.load(MODELPATH / 'best_model.pkl')   
         plot_model(best_model, 'feature', display_format='streamlit')
 
-
-    ########################################
-    # Clear Memory After Experiment
-    ########################################
-    st.subheader('Clear Memory after Experiment!')
-    if st.button('Clear Memory'):
-        # clear files in data folder
-        filelist = [f for f in os.listdir(DATAPATH) ]
-        for f in filelist:
-            os.remove(os.path.join(DATAPATH, f))
-        # clear files in model folder
-        filelist = [f for f in os.listdir(MODELPATH) ]
-        for f in filelist:
-            os.remove(os.path.join(MODELPATH, f))
-    
-        
     
