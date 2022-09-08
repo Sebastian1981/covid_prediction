@@ -53,8 +53,8 @@ def run_model_app():
                     x=df_country.index, 
                     y=['icu_patients_per_million', target_name], 
                     title = '{}: COVID-19 Patients in ICU per Million'.format(country_selected), 
-                    width=1200,
-                    height=600,
+                    width=800,
+                    height=400,
                     template = 'plotly_dark')
     fig.add_vline(x=split_date, line_width=3, line_dash="dash", line_color="red")
     fig.add_vrect(x0=start_date, x1=split_date, row="all", col=1,
@@ -71,7 +71,7 @@ def run_model_app():
     ########################################    
     st.subheader('Train Machine Learning Model!')
     if st.button('Train Model'):
-        train_state = st.text('Training Model...(30s-3min!)')
+        train_state = st.text('Training Model...(up to 3min!)')
         s = setup(df_train, 
             target = target_name,
             #ignore_features = ['location', 'new_cases_per_million', 'new_deaths_per_million_pct_change'],
@@ -140,8 +140,8 @@ def run_model_app():
                     x=df_country.index, 
                     y=['icu_patients_per_million', forecast_name], 
                     title = '{}: COVID-19 Patients in ICU per Million'.format(country_selected), 
-                    width=1200,
-                    height=600,
+                    width=800,
+                    height=400,
                     template = 'plotly_dark')
     fig.add_vline(x=split_date, line_width=3, line_dash="dash", line_color="red")
     fig.add_vrect(x0=start_date, x1=split_date, row="all", col=1,

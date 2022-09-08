@@ -71,8 +71,8 @@ def run_eda_app():
     fig = px.line(df_country, x=df_country.index, 
                     y=[feature_selected], 
                     title = feature_selected, 
-                    width=1200,
-                    height=600,
+                    width=800,
+                    height=400,
                     template = 'plotly_dark')
     st.write(fig)
 
