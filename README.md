@@ -1,18 +1,18 @@
 
 
-![covid_virus](images\virus.png)
+![covid_virus](.\images\virus.png)
 
 
 
 ### **Problem Description:**
 Month-long lockdowns were decided in a large number of countries based on the occupancy of the intensive care units. The aim of the project is a global but country-specific forecast of the occupancy of intensive care units in hospitals due to COVID-19. Being able to estimate this size one to two weeks in advance is very important, especially in times of a pandemic and especially in countries with chronically overcrowded intensive care units.
 
-![covid_map](images\frontpage.png)
+![covid_map](.\images\frontpage.png)
 
 ### **Solution Approach:**
 There are a numberous approaches for estimating intensive care bed occupancy. In principle, they can be divided into deterministic and probabilistic models. The former model types are strongly assumption-driven and therefore often very error-prone if only a few of the assumptions are incorrect. The data-driven probabilistic models, on the other hand, are very promising if the data basis is good, since they are not or only slightly dependent on assumptions about the system to be described. For more details on this topic, please read the scientific literature. However, the amount of data on COVID-19 has been growing steadily since the beginning of 2020. For me as a data scientist, it is therefore obvious to try to investigate such an important target variable as the occupancy of intensive care units using data-driven probabilistic models.
 
-![icu_forecast](images\icu_forecast.png)
+![icu_forecast](.\images\icu_forecast.png)
 
 ***Image Description:*** 
 *Actual ICU patient number (blue curve) and the running 14-day forecast (red curve). Ideally the 14-day forecast is a copy of the actual ICU patient number shifted by 14 days to the left. It can be seen that the forecast for Italy is very accurate for the training period but less accurate for the testing period (as expected). However, even in the testing period high correlation can be observed between the actual ICU curve and the forecast with the actual ICU curve following the forecast after a few weeks. This can be seen for quite a few months from the end of the training period into the testing period.*
