@@ -63,6 +63,8 @@ def run_eda_app():
     # Visualize Data
     ########################################
     st.markdown('**Select Feature for Data Visualization:**')
+    st.markdown('- inspect the time series of all features for data quality')
+    st.markdown('- if data quality is bad, the model performance is likely to be poor')
     cols = [feat for feat in df_country.columns][1:]
     feature_selected = st.selectbox('Select Feature', options=cols)
     # visualize 
