@@ -7,12 +7,15 @@ from modeling import run_model_app
 
 def main():
     st.title('Let´s Predict the Number of COVID-19 Patients in Intensive Care Units (ICU) per Million People')
-    menu = ["About this Project", "Import Data", "Predict ICU Patients"]
+    menu = ["About this Project", "Predict ICU Patients"]
     choice = st.sidebar.selectbox("Menu", menu)
 
-    if choice == 'Import Data':
-        run_eda_app()
+    if choice == 'About this Project':
+        st.write('Add project description here!')
     elif choice == 'Predict ICU Patients':
+        st.header('Explore Live Data from "Our World in Data"')
+        run_eda_app()
+        st.header('Train AI-Model and Run Predictions!')
         run_model_app()
         
 

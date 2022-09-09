@@ -25,11 +25,10 @@ features = ['date',
 
 
 def run_eda_app():
-            
+                    
     ########################################
     # Download Data
     ########################################
-    st.header('Get the Data!')
     if st.button('Update COVID-Data'):
         data_load_state = st.text('Loading data from our-world-in-data.org ...')
         df = download_data(url_data, features)
@@ -39,8 +38,8 @@ def run_eda_app():
     ########################################
     # Filter Data Due Missing Values
     ########################################
-    st.header('Filter Out Countries with Too Much Missing Data!')
-    max_pct_missing = st.slider('Set Max Percent Missing Rows in Each Country: ', 1, 20, 5)
+    st.markdown('**Assure Data Quality:**')
+    max_pct_missing = st.slider('Set Maximal Percent Missing Rows in each Country: ', 1, 20, 5)
     df = pd.read_csv(DATAPATH / 'df_raw.csv', index_col='date')
     df.index = pd.to_datetime(df.index)
     df_reduced = drop_countries(df, max_missing_pct=max_pct_missing/100)
@@ -49,31 +48,31 @@ def run_eda_app():
     
     ########################################
     # Select Country
-    ########################################    
-    st.header('Select Country!')
+    ########################################
+    st.markdown('**Select Country:**')    
     countries = [country for country in df_reduced['location'].unique()]
     country_selected = st.selectbox('Select Country from Dropdown', options=countries)
     df_country = filter_country(df_reduced, country_selected)
     df_country = ts_filling(df_country)
     df_country = add_new_deaths_pct_change(df_country)
     df_country = add_case_fatality_rate(df_country)
-    st.write('{} was selected.'.format(country_selected))
     df_country.to_csv(DATAPATH / 'df_country.csv') # save dataset to local folder
     
 
     ########################################
     # Visualize Data
     ########################################
-    st.header('Visualize Features!')
+    st.markdown('**Select Feature for Data Visualization:**')
     cols = [feat for feat in df_country.columns][1:]
-    feature_selected = st.selectbox('Select Feature for Plotting.', options=cols)
-
+    feature_selected = st.selectbox('Select Feature', options=cols)
+    # visualize 
     fig = px.line(df_country, x=df_country.index, 
                     y=[feature_selected], 
                     title = feature_selected, 
-                    width=700,
-                    height=350,
+                    width=800,
+                    height=400,
                     template = 'plotly_dark')
+    fig.update_layout({'legend_orientation':'h'})
     st.write(fig)
 
 

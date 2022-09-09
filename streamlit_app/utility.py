@@ -108,7 +108,7 @@ def train_test_split(df_country:pd.DataFrame, split_date:str)->pd.DataFrame:
 # Modeling
 ##########################################################################
 @st.cache
-def init_model_pipe(df_train, target_name):
+def train_model(df_train, target_name):
     """Initialize a pycaret modeling preprocessing pipeline; Pass the training data and the target name 
     """
     setup(df_train, 
