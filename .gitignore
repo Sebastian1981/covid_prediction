@@ -133,6 +133,7 @@ dmypy.json
 
 # ignore data folder
 /data
+/images
 /streamlit_app/data
 /streamlit_app/models/
 
