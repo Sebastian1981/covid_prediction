@@ -1,6 +1,15 @@
 
 import streamlit as st
+import os
+from pathlib import Path
 import pandas as pd
+from pycaret.regression import *
+import joblib
+
+# set directories
+rootdir = os.getcwd()
+DATAPATH = Path(rootdir) / 'data'
+MODELPATH = Path(rootdir) / 'models'
 
 def download_data(url_data, features)->pd.DataFrame:
     """download latest covid data from https://ourworldindata.org and return . Provide the url and the features you want."""
@@ -90,3 +99,43 @@ def train_test_split(df_country:pd.DataFrame, split_date:str)->pd.DataFrame:
     df_train = filter_date(df_country, start_date=start_date, end_date=split_date)
     df_test = filter_date(df_country, start_date=day_after_split_date, end_date=end_date) 
     return df_train, df_test
+
+
+
+
+
+##########################################################################
+# Modeling
+##########################################################################
+@st.cache
+def init_model_pipe(df_train, target_name):
+    """Initialize a pycaret modeling preprocessing pipeline; Pass the training data and the target name 
+    """
+    setup(df_train, 
+        target = target_name,
+        #ignore_features = ['location', 'new_cases_per_million', 'new_deaths_per_million_pct_change'],
+        ignore_features = ['location'],
+        train_size = .99999,
+        data_split_shuffle = False, 
+        fold_strategy = 'timeseries', fold=2,
+        imputation_type = 'simple',
+        numeric_imputation = 'median',
+        remove_multicollinearity = True,
+        multicollinearity_threshold = 0.3,
+        feature_interaction=False,
+        polynomial_features=False,
+        remove_outliers = False,
+        transform_target=False,
+        transformation = False,
+        normalize = False,
+        feature_selection = False,
+        feature_selection_method='boruta',
+        feature_selection_threshold = 0.3,
+        silent = True, 
+        verbose = True, 
+        session_id = 123)
+
+    # train light gradient boosting machine because its very fast and works good on few data points
+    best_model = create_model('lightgbm') 
+    # save model
+    joblib.dump(best_model, MODELPATH / 'best_model.pkl') 
