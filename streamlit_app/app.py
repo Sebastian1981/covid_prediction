@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-
+from pathlib import Path
 
 from eda import run_eda_app
 from modeling import run_model_app
@@ -11,7 +11,12 @@ def main():
     choice = st.sidebar.selectbox("Menu", menu)
 
     if choice == 'About this Project':
-        st.write('Add project description here!')
+        st.header('About this Project')
+        st.image('./images/frontpage.png')
+        st.markdown(Path('About.md').read_text())
+        st.image('./images/icu_forecast.png')
+        st.markdown(Path('image_description.md').read_text()) 
+        st.markdown(Path('app_usage.md').read_text())
     elif choice == 'Predict ICU Patients':
         st.header('Explore Live Data from "Our World in Data"')
         run_eda_app()

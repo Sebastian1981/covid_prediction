@@ -1,0 +1,3 @@
+***Image Description:*** 
+
+*Actual ICU patient number (blue curve) and the running 14-day forecast (red curve). Ideally the 14-day forecast is a copy of the actual ICU patient number shifted by 14 days to the left. It can be seen that the forecast for Italy is very accurate for the training period but less accurate for the testing period (as expected). However, even in the testing period high correlation can be observed between the actual ICU curve and the forecast with the actual ICU curve following the forecast after a few weeks. This can be seen for quite a few months from the end of the training period into the testing period.*
