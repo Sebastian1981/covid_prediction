@@ -12,9 +12,9 @@ def main():
 
     if choice == 'About this Project':
         st.header('About this Project')
-        st.image('./images/frontpage.png')
+        st.image('frontpage.png')
         st.markdown(Path('About.md').read_text())
-        st.image('./images/icu_forecast.png')
+        st.image('icu_forecast.png')
         st.markdown(Path('image_description.md').read_text()) 
         st.markdown(Path('app_usage.md').read_text())
     elif choice == 'Predict ICU Patients':
