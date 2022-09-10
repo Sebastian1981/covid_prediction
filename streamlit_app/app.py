@@ -12,6 +12,7 @@ IMAGEPATH = Path(rootdir) / 'images'
 MARKDOWNPATH = Path(rootdir) / 'markdowns'
 
 
+
 def main():
     st.title('Let´s Predict the Number of COVID-19 Patients in Intensive Care Units (ICU) per Million People')
     menu = ["About this Project", "Predict ICU Patients"]
@@ -21,7 +22,7 @@ def main():
         st.header('About this Project')
         image = Image.open(IMAGEPATH / 'frontpage.png')
         st.image(image, caption='COVID-19 deaths worldwide in March 2020')
-        st.markdown(Path('./markdowns/about.md').read_text())
+        st.markdown(Path('./streamlit_app/markdowns/about.md').read_text())
         #st.markdown((MARKDOWNPATH / 'about.md').read_text())
         
         image = Image.open(IMAGEPATH / 'icu_forecast.png')
