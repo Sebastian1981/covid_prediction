@@ -1,9 +1,15 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-
+import os
 from eda import run_eda_app
 from modeling import run_model_app
+from PIL import Image
+
+# set paths
+rootdir = os.getcwd()
+IMAGEPATH = Path(rootdir) / 'images'
+
 
 def main():
     st.title('Let´s Predict the Number of COVID-19 Patients in Intensive Care Units (ICU) per Million People')
@@ -12,9 +18,11 @@ def main():
 
     if choice == 'About this Project':
         st.header('About this Project')
-        st.image('./frontpage.png')
+        image = Image.open(IMAGEPATH / 'frontpage.png')
+        st.image(image, caption='COVID-19 deaths worldwide in March 2020')
         st.markdown(Path('About.md').read_text())
-        st.image('./icu_forecast.png')
+        image = Image.open(IMAGEPATH / 'icu_forecast.png')
+        st.image(image, caption='COVID-19 patients per million in Italy.')
         st.markdown(Path('image_description.md').read_text()) 
         st.markdown(Path('app_usage.md').read_text())
     elif choice == 'Predict ICU Patients':

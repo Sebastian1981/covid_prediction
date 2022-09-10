@@ -71,7 +71,7 @@ def run_model_app():
     ########################################    
     st.markdown('**Train Machine Learing Model:**')
     if st.button('Train Model'):
-        train_state = st.text('Training Model...(may take up to 2min on free server :-) )')
+        train_state = st.text('Training Model...(may take up to 2min on free tier server :-) )')
         train_model(df_train, target_name)
         train_state = st.text('Training...Done!')
     
