@@ -24,14 +24,12 @@ def main():
         st.image(image, caption='COVID-19 deaths worldwide in March 2020')
         st.markdown(Path('./streamlit_app/markdowns/about.md').read_text())
         #st.markdown((MARKDOWNPATH / 'about.md').read_text())
-        
-
-
-
         image = Image.open(IMAGEPATH / 'icu_forecast.png')
         st.image(image, caption='COVID-19 patients per million in Italy.')
-        st.markdown((MARKDOWNPATH / 'image_description.md').read_text())
-        st.markdown((MARKDOWNPATH / 'app_usage.md').read_text()) 
+        st.markdown(Path('./streamlit_app/markdowns/image_description.md').read_text())
+        #st.markdown((MARKDOWNPATH / 'image_description.md').read_text())
+        st.markdown(Path('./streamlit_app/markdowns/app_usage.md').read_text())
+        #st.markdown((MARKDOWNPATH / 'app_usage.md').read_text()) 
     elif choice == 'Predict ICU Patients':
         st.header('Explore Live Data from "Our World in Data"')
         run_eda_app()
