@@ -21,7 +21,7 @@ def run_project_description_app():
         st.markdown(Path('./streamlit_app/markdowns/about.md').read_text())
 
     image = Image.open(IMAGEPATH / 'icu_forecast.png')
-    st.image(image, caption='ICU patients for Italy: actual curve(blue) and ideal forecast (red.)')
+    st.image(image, caption='ICU patients for Italy: actual curve(blue) and running 14-day ahead forecast (red)')
 
     try: # this should work on a local computer
         st.markdown((MARKDOWNPATH / 'image_description.md').read_text())
