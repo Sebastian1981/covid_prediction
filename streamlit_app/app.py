@@ -21,7 +21,9 @@ def main():
         st.header('About this Project')
         image = Image.open(IMAGEPATH / 'frontpage.png')
         st.image(image, caption='COVID-19 deaths worldwide in March 2020')
-        st.markdown((MARKDOWNPATH / 'about.md').read_text())
+        st.markdown(Path('./markdowns/about.md').read_text())
+        #st.markdown((MARKDOWNPATH / 'about.md').read_text())
+        
         image = Image.open(IMAGEPATH / 'icu_forecast.png')
         st.image(image, caption='COVID-19 patients per million in Italy.')
         st.markdown((MARKDOWNPATH / 'image_description.md').read_text())
