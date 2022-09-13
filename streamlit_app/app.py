@@ -5,7 +5,7 @@ from about import run_project_description_app
 
 
 def main():
-    st.title('Let´s Predict the Number of COVID-19 Patients in Intensive Care Units (ICU) per Million People')
+    st.title('Web-App: Predict COVID-19 Patients in Intensive Care Units (ICU) per Million People')
     menu = ["About this Project", "Predict ICU Patients"]
     choice = st.sidebar.selectbox("Menu", menu)
 
